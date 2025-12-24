@@ -51,7 +51,8 @@ class ApiService {
     this.token = null;
   }
 
-  private async request(
+  // Make request method public for custom API calls
+  async request(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<any> {

@@ -18,11 +18,29 @@ export default function TakeSurveyScreen() {
   const [answers, setAnswers] = useState<{ [key: number]: boolean }>({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [alreadyResponded, setAlreadyResponded] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
     loadSurvey();
+    checkIfAlreadyResponded();
   }, [id]);
+
+  // Check if user already responded to this survey
+  const checkIfAlreadyResponded = async () => {
+    if (!user) return;
+    try {
+      const responses = await apiService.request('/responses', {});
+      const userResponse = responses.find(
+        (r: any) => r.survey_id === Number(id) && r.user_id === user.id
+      );
+      if (userResponse) {
+        setAlreadyResponded(true);
+      }
+    } catch (error) {
+      console.error('Error checking response:', error);
+    }
+  };
 
   const loadSurvey = async () => {
     try {
@@ -73,12 +91,17 @@ export default function TakeSurveyScreen() {
         });
       }
 
-      Alert.alert('Success', 'Your response has been submitted!', [
-        {
-          text: 'OK',
-          onPress: () => router.back(),
-        },
-      ]);
+      // Show thank you confirmation
+      Alert.alert(
+        'Terima Kasih!',
+        'Terima Kasih Telah Mengisi Survey.\n\nRespon Anda Sangat Berarti Untuk Perubahan dan Kemajuan Kampus.',
+        [
+          {
+            text: 'OK',
+            onPress: () => router.replace('/user/surveys'),
+          },
+        ]
+      );
     } catch (error: any) {
       if (error.message.includes('already responded')) {
         Alert.alert('Already Submitted', 'You have already responded to this survey');
@@ -95,6 +118,26 @@ export default function TakeSurveyScreen() {
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
+
+  // Show message if already responded
+  if (alreadyResponded) {
+    return (
+      <View style={styles.centerContainer}>
+        <View style={styles.messageCard}>
+          <Text style={styles.messageTitle}>Already Responded</Text>
+          <Text style={styles.messageText}>
+            You have already submitted your response to this survey.
+          </Text>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <Text style={styles.backButtonText}>Back to Surveys</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     );
   }
@@ -207,6 +250,45 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    padding: 20,
+  },
+  messageCard: {
+    backgroundColor: '#fff',
+    padding: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+    maxWidth: 350,
+  },
+  messageTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#FF9500',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  messageText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 24,
+  },
+  backButton: {
+    backgroundColor: '#007AFF',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
   content: {
     padding: 20,
