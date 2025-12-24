@@ -41,7 +41,7 @@ class GeminiService
                 ],
                 'generationConfig' => [
                     'temperature' => 0.7,
-                    'maxOutputTokens' => 2048, // Increased for longer analysis
+                    'maxOutputTokens' => 1500, // Optimized for concise analysis
                 ]
             ]);
 
@@ -90,36 +90,27 @@ class GeminiService
         $totalResponses = $data['total_responden'];
         $questions = $data['questions'];
 
-        $prompt = "Anda adalah seorang analis survei profesional. Analisis hasil survei berikut secara mendalam:\n\n";
-        $prompt .= "══════════════════════════════════════\n";
-        $prompt .= "INFORMASI SURVEI\n";
-        $prompt .= "══════════════════════════════════════\n";
-        $prompt .= "Judul: {$surveyTitle}\n";
-        $prompt .= "Total Responden: {$totalResponses} orang\n";
-        $prompt .= "Total Pertanyaan: " . count($questions) . "\n\n";
+        $prompt = "Analisis survei berikut dengan RINGKAS dan JELAS:\n\n";
+        $prompt .= "SURVEI: {$surveyTitle}\n";
+        $prompt .= "Responden: {$totalResponses} orang\n\n";
         
-        $prompt .= "══════════════════════════════════════\n";
-        $prompt .= "DETAIL HASIL PER PERTANYAAN\n";
-        $prompt .= "══════════════════════════════════════\n";
-
+        $prompt .= "HASIL PER PERTANYAAN:\n";
         foreach ($questions as $index => $question) {
             $num = $index + 1;
-            $prompt .= "\n[Pertanyaan {$num}]\n";
-            $prompt .= "{$question['question_text']}\n";
-            $prompt .= "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-            $prompt .= "✓ Setuju        : {$question['setuju']} orang ({$question['setuju_percentage']}%)\n";
-            $prompt .= "✗ Tidak Setuju  : {$question['tidak_setuju']} orang ({$question['tidak_setuju_percentage']}%)\n";
+            $prompt .= "{$num}. {$question['question_text']}\n";
+            $prompt .= "   Setuju: {$question['setuju']} ({$question['setuju_percentage']}%) | Tidak: {$question['tidak_setuju']} ({$question['tidak_setuju_percentage']}%)\n";
         }
 
-        $prompt .= "\n\n══════════════════════════════════════\n";
-        $prompt .= "TUGAS ANALISIS\n";
-        $prompt .= "══════════════════════════════════════\n";
-        $prompt .= "Berdasarkan data survei di atas, berikan analisis dalam format berikut:\n\n";
+        $prompt .= "\nBuat analisis SINGKAT dalam format:\n";
         $prompt .= "**SUMMARY:**\n";
-        $prompt .= "Buat ringkasan singkat (2-3 kalimat) tentang hasil survei. Sebutkan pola umum dari jawaban responden.\n\n";
+        $prompt .= "(Maksimal 2-3 kalimat ringkas tentang temuan utama)\n\n";
         $prompt .= "**INSIGHT:**\n";
-        $prompt .= "Berikan 3-4 poin insight mendalam dan rekomendasi aksi konkret. Fokus pada implikasi praktis.\n\n";
-        $prompt .= "Gunakan bahasa Indonesia yang profesional. WAJIB gunakan format dengan marker **SUMMARY:** dan **INSIGHT:**";
+        $prompt .= "(Maksimal 3 poin insight dengan bullet points. Setiap poin maksimal 2 kalimat pendek.)\n\n";
+        $prompt .= "PENTING:\n";
+        $prompt .= "- JANGAN gunakan emoji atau simbol\n";
+        $prompt .= "- GUNAKAN bahasa Indonesia formal\n";
+        $prompt .= "- HARUS ringkas dan padat\n";
+        $prompt .= "- WAJIB gunakan marker **SUMMARY:** dan **INSIGHT:**";
 
         return $prompt;
     }

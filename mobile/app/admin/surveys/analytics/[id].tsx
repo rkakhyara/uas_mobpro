@@ -73,8 +73,12 @@ export default function SurveyAnalyticsScreen() {
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+      <View style={styles.loadingContainer}>
+        <View style={styles.loadingCard}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.loadingText}>Memuat Analytics...</Text>
+          <Text style={styles.loadingSubtext}>Menganalisis data survei dengan AI</Text>
+        </View>
       </View>
     );
   }
@@ -118,7 +122,7 @@ export default function SurveyAnalyticsScreen() {
 
         {/* Overall Statistics */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📊 Overall Statistics</Text>
+          <Text style={styles.sectionTitle}>Overall Statistics</Text>
           <View style={styles.statsGrid}>
             <View style={styles.statCard}>
               <Text style={styles.statValue}>{statistics.total_responden}</Text>
@@ -177,7 +181,7 @@ export default function SurveyAnalyticsScreen() {
 
         {/* Per Question Statistics */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>📋 Statistics per Question</Text>
+          <Text style={styles.sectionTitle}>Statistics per Question</Text>
           {questions_stats.map((question, index) => (
             <View key={question.question_id} style={styles.questionCard}>
               <Text style={styles.questionNumber}>Question {index + 1}</Text>
@@ -237,7 +241,7 @@ export default function SurveyAnalyticsScreen() {
         {/* Gemini AI Analysis */}
         {gemini_analysis && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>🤖 AI Analysis by Gemini</Text>
+            <Text style={styles.sectionTitle}>AI Analysis by Gemini</Text>
             
             <View style={styles.analysisCard}>
               <Text style={styles.analysisTitle}>Summary</Text>
@@ -272,6 +276,37 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  loadingCard: {
+    backgroundColor: '#fff',
+    padding: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
+    minWidth: 250,
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+  },
+  loadingSubtext: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
   },
   content: {
     padding: 20,

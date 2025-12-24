@@ -102,7 +102,7 @@ export default function SurveyDetailScreen() {
           style={styles.analyticsButton} 
           onPress={() => router.push(`/admin/surveys/analytics/${survey.id}`)}
         >
-          <Text style={styles.analyticsButtonText}>📊 View Analytics & AI Insights</Text>
+          <Text style={styles.analyticsButtonText}>View Analytics & AI Insights</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.button} onPress={toggleStatus}>
