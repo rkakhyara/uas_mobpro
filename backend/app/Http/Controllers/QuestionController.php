@@ -8,42 +8,60 @@ use Illuminate\Http\Request;
 class QuestionController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of questions
      */
     public function index()
     {
-        //
+        $questions = Question::with(['survey', 'answers'])->get();
+        return response()->json($questions);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created question
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'survey_id' => 'required|exists:surveys,id',
+            'question_text' => 'required|string',
+            'order' => 'sometimes|integer|min:0',
+        ]);
+
+        $question = Question::create($validated);
+
+        return response()->json($question, 201);
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified question
      */
     public function show(Question $question)
     {
-        //
+        $question->load(['survey', 'answers']);
+        return response()->json($question);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified question
      */
     public function update(Request $request, Question $question)
     {
-        //
+        $validated = $request->validate([
+            'question_text' => 'sometimes|string',
+            'order' => 'sometimes|integer|min:0',
+        ]);
+
+        $question->update($validated);
+
+        return response()->json($question);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified question
      */
     public function destroy(Question $question)
     {
-        //
+        $question->delete();
+        return response()->json(['message' => 'Question deleted successfully']);
     }
 }

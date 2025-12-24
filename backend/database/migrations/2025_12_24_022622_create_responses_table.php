@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('responses', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('survey_id')->constrained('surveys')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->timestamp('submitted_at')->useCurrent();
             $table->timestamps();
+            
+            $table->unique(['survey_id', 'user_id'], 'unique_user_survey');
         });
     }
 
